@@ -36,12 +36,14 @@ export default Vue.extend({
   async mounted() {
     this.$data.informacion = await tiendasService.getTiendas();
   },
+
   methods: {
     async getProductos(id: number) {
       this.$data.showTable = true;
       this.$data.productos = await tiendasService.getProductosTienda(`${id}?join=productos`);
     }
   },
+
   data: () => ({
     informacion: null,
     productos: null,
