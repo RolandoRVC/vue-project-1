@@ -12,6 +12,9 @@
       <v-btn text>
         <router-link class="white--text text-decoration-none mr-2" to="/items">Items</router-link>
       </v-btn>
+      <v-btn text>
+        <router-link class="white--text text-decoration-none mr-2" to="/tiendas">Tiendas</router-link>
+      </v-btn>
     </v-app-bar>
     <v-main>
       <router-view />
