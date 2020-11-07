@@ -2,19 +2,28 @@
   <v-app>
     <v-app-bar app class="blue-grey darken-4" dark>
       <div class="d-flex align-center">
-        <v-btn text>
-          <router-link to="/" class="white--text text-decoration-none">Inicio</router-link>
-        </v-btn>
+        <router-link to="/" class="white--text text-decoration-none">
+          <v-btn text>
+            Inicio
+          </v-btn>
+        </router-link>
       </div>
-
       <v-spacer></v-spacer>
-
-      <v-btn text>
-        <router-link class="white--text text-decoration-none mr-2" to="/items">Items</router-link>
-      </v-btn>
-      <v-btn text>
-        <router-link class="white--text text-decoration-none mr-2" to="/tiendas">Tiendas</router-link>
-      </v-btn>
+      <router-link class="white--text text-decoration-none mr-2" to="/items">
+        <v-btn text>
+          Items
+        </v-btn>
+      </router-link>
+      <router-link class="white--text text-decoration-none mr-2" to="/tiendas">
+        <v-btn text>
+          Tiendas
+        </v-btn>
+      </router-link>
+      <router-link class="white--text text-decoration-none mr-2" to="/components">
+        <v-btn text>
+          Components
+        </v-btn>
+      </router-link>
     </v-app-bar>
     <v-main>
       <router-view />
