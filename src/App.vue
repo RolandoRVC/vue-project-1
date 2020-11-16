@@ -1,30 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app class="blue-grey darken-4" dark>
-      <div class="d-flex align-center">
-        <router-link to="/" class="white--text text-decoration-none">
-          <v-btn text>
-            Inicio
-          </v-btn>
-        </router-link>
-      </div>
-      <v-spacer></v-spacer>
-      <router-link class="white--text text-decoration-none mr-2" to="/items">
-        <v-btn text>
-          Items
-        </v-btn>
-      </router-link>
-      <router-link class="white--text text-decoration-none mr-2" to="/tiendas">
-        <v-btn text>
-          Tiendas
-        </v-btn>
-      </router-link>
-      <router-link class="white--text text-decoration-none mr-2" to="/components">
-        <v-btn text>
-          Components
-        </v-btn>
-      </router-link>
-    </v-app-bar>
+    <Nav />
     <v-main>
       <router-view />
     </v-main>
@@ -32,12 +8,13 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import { Component, Vue } from "vue-property-decorator";
+import Nav from "./components/Nav.vue";
 
-export default Vue.extend({
-  name: "App",
-  data: () => ({
-    //
-  })
-});
+@Component({
+  components: {
+    Nav
+  }
+})
+export default class App extends Vue {}
 </script>

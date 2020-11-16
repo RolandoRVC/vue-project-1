@@ -5,12 +5,12 @@
     <p class="mb-0">Input Value:</p>
     <span>{{ Hello }}</span>
     <p class="mt-2 mb-0">Props:</p>
-    <span>{{exampleProperty}}</span>
+    <span>{{ exampleProperty }}</span>
     <p class="mt-2 mb-0">Computed Props</p>
-    <span>{{myComputedProp}}</span>
+    <span>{{ myComputedProp }}</span>
     <p class="mt-2 mb-0">Watch:</p>
-    <span class="pr-5">{{InputValue}}</span>
-    <span>{{InputOldValue}}</span>
+    <span class="pr-5">{{ InputValue }}</span>
+    <span>{{ InputOldValue }}</span>
   </v-container>
 </template>
 
