@@ -183,6 +183,7 @@ export default class Dom extends Vue {
     this.Tiendas = await tiendasService.getTiendas();
   }
   //Methods
+
   async getProducts(tienda: TiendasInterface) {
     this.SelectedStoreInformation = JSON.parse(JSON.stringify(tienda));
     this.NombreTienda = this.SelectedStoreInformation.nombre;
