@@ -232,7 +232,6 @@ export default class Dom extends Vue {
   async mounted() {
     this.Tiendas = await tiendasService.getTiendas();
   }
-  //Methods
 
   async getProducts(tienda: TiendasInterface) {
     this.SelectedStoreInformation = JSON.parse(JSON.stringify(tienda));
@@ -246,17 +245,9 @@ export default class Dom extends Vue {
 
   deleteStore() {
     this.Dialogs.delete = true;
-    this.dele(this.SelectedStoreInformation.id);
+    this.deleteStoreServer(this.SelectedStoreInformation.id);
   }
-  async dele(id:number){
-    const data :AxiosResponse = await tiendasService.deleteTiendas(id);
-    if(data.status === 200){
-      console.log("Se ha eliminado");
-      this.Tiendas = this.Tiendas.filter((tienda: { id: number; }) => tienda.id !== id);
-      this.Dialogs.delete = false;
-      this.Productos.productos = [];
-    }
-  }
+
   addStore() {
     this.Dialogs.editCreate = true;
     this.FormMode = "create";
@@ -267,9 +258,9 @@ export default class Dom extends Vue {
     this.FormMode = "edit";
     const index = this.findStore(this.SelectedStoreInformation.id);
     if (index !== undefined) {
-      const tienda = this.Tiendas[index];
-      this.SelectedStoreInformation.nombre = tienda.nombre;
-      this.SelectedStoreInformation.direccion = tienda.direccion;
+      const store = this.Tiendas[index];
+      this.SelectedStoreInformation.nombre = store.nombre;
+      this.SelectedStoreInformation.direccion = store.direccion;
     }
     this.Dialogs.editCreate = true;
   }
@@ -334,6 +325,23 @@ export default class Dom extends Vue {
       this.SelectedStoreInformation.id,
       body
     );
+  }
+  /**
+   * Delete store using axios
+   * @param id
+   */
+  async deleteStoreServer(id:number){
+    const data: AxiosResponse = await tiendasService.deleteTiendas(id);
+    if (data.status === 200){
+      console.log("Se ha eliminado");
+      this.Tiendas = this.Tiendas.filter(
+        (store: { id: number }) => store.id !== id
+      );
+      this.Dialogs.delete = false;
+      this.Productos = [];
+      this.vaciarCampos();
+      this.SelectedStoreInformation.id = null;
+    }
   }
 
   /**
