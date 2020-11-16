@@ -15,6 +15,17 @@ class ProductosService {
             .post<ProductosInterface[]>(`${this.URLBASE}productos`, body)
             .then(response => response);
     }
+
+    async editProductosTiendas(productId:number, body: object) {
+        return await axios
+            .patch<ProductosInterface[]>(`${this.URLBASE}productos/${productId}`, body)
+            .then(response => response);
+    }
+    async deleteProductosTiendas(productId:number) {
+        return await axios
+            .delete<ProductosInterface[]>(`${this.URLBASE}productos/${productId}`)
+            .then(response => response);
+    }
 }
 
 export const productosService = new ProductosService();
