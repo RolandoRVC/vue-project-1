@@ -38,16 +38,22 @@
           ></v-progress-circular>
         </div>
         <div class="container text-center" style="max-width: 450px;">
-          <v-btn class="mx-1" depressed elevation="2" color="primary"
-            >Agregar</v-btn
+          <v-btn
+            class="mx-1"
+            depressed
+            elevation="2"
+            color="primary"
+            @click="addStore"
           >
+            Agregar
+          </v-btn>
           <v-btn
             class="mx-1"
             depressed
             :disabled="!SelectedStoreInformation.id"
             elevation="2"
             color="warning"
-            @click="editInfoStore(SelectedStoreInformation.id)"
+            @click="editStore"
             >Editar</v-btn
           >
           <v-btn
@@ -56,6 +62,7 @@
             :disabled="!SelectedStoreInformation.id"
             elevation="2"
             color="error"
+            @click="Dialogs.delete = true"
             >Eliminar</v-btn
           >
         </div>
@@ -113,11 +120,15 @@
       </v-col>
     </v-row>
     <v-row justify="center">
-      <v-dialog v-model="Dialogs.edit" max-width="600px">
+      <v-dialog v-model="Dialogs.editCreate" max-width="600px">
         <v-card>
           <v-card-title>
             <span class="headline">
-              Información de la tienda {{ NombreTienda }}
+              {{
+                FormMode === "create"
+                  ? "Crear nueva tienda"
+                  : `Información de la tienda ${NombreTienda}`
+              }}
             </span>
           </v-card-title>
           <v-card-text>
@@ -143,11 +154,48 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="Dialogs.edit = false">
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="Dialogs.editCreate = false"
+            >
               Close
             </v-btn>
             <v-btn color="blue darken-1" text @click="saveStore">
               Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
+    <v-row justify="center">
+      <v-dialog
+          v-model="Dialogs.delete"
+          max-width="290"
+      >
+        <v-card>
+          <v-card-title class="headline">
+            Alto
+          </v-card-title>
+          <v-card-text>¿Estás seguro de eliminar "{{NombreTienda}}"?
+            <br><br>
+            {{Productos.productos ? Productos.productos.length ? '¡Tus productos se perderán!': '': ''}}
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                color="green darken-1"
+                text
+                @click="Dialogs.delete = false"
+            >
+              Cancelar
+            </v-btn>
+            <v-btn
+                color="green darken-1"
+                text
+                @click="deleteStore"
+            >
+              Eliminar
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -175,8 +223,10 @@ export default class Dom extends Vue {
   SelectedStoreInformation: TiendasInterface | any = {};
   Dialogs = {
     delete: false,
-    edit: false
+    editCreate: false
   };
+  //Form Mode => edit, create
+  FormMode = "edit";
   NombreTienda = "";
   //Mounted
   async mounted() {
@@ -194,31 +244,54 @@ export default class Dom extends Vue {
     this.CargandoProductos = false;
   }
 
-  deleteStore(id: number) {
-    console.log(id);
+  deleteStore() {
+    this.Dialogs.delete = true;
+    this.dele(this.SelectedStoreInformation.id);
+  }
+  async dele(id:number){
+    const data :AxiosResponse = await tiendasService.deleteTiendas(id);
+    if(data.status === 200){
+      console.log("Se ha eliminado");
+      this.Tiendas = this.Tiendas.filter((tienda: { id: number; }) => tienda.id !== id);
+      this.Dialogs.delete = false;
+      this.Productos.productos = [];
+    }
+  }
+  addStore() {
+    this.Dialogs.editCreate = true;
+    this.FormMode = "create";
+    this.vaciarCampos();
   }
 
-  editInfoStore(id: number) {
-    this.Dialogs.edit = true;
+  editStore() {
+    this.FormMode = "edit";
+    const index = this.findStore(this.SelectedStoreInformation.id);
+    if (index !== undefined) {
+      const tienda = this.Tiendas[index];
+      this.SelectedStoreInformation.nombre = tienda.nombre;
+      this.SelectedStoreInformation.direccion = tienda.direccion;
+    }
+    this.Dialogs.editCreate = true;
   }
   async saveStore() {
-    const indexStore: number | undefined = this.findStore(
-      this.SelectedStoreInformation.id
-    );
-    //if indexStore is not undefined
-    if (indexStore !== undefined) {
-      const data: AxiosResponse = await this.saveStoreServer();
-      if (data.status === 200) {
-        this.Tiendas[indexStore].nombre = this.SelectedStoreInformation.nombre;
-        this.Tiendas[indexStore].direccion = this.SelectedStoreInformation.direccion;
-        this.NombreTienda = data.data.nombre;
-        //close Edit Dialog
-        this.Dialogs.edit = false;
+    if (this.FormMode === "create") {
+      await this.saveStoreServer();
+    } else {
+      const indexStore: number | undefined = this.findStore(
+        this.SelectedStoreInformation.id
+      );
+      //if indexStore is not undefined
+      if (indexStore !== undefined) {
+        await this.saveStoreServer(indexStore);
       }
     }
   }
 
   //start with helper function
+  vaciarCampos() {
+    this.SelectedStoreInformation.nombre = "";
+    this.SelectedStoreInformation.direccion = "";
+  }
   /**
    * @param storeId
    * find Store and return store position index
@@ -231,11 +304,50 @@ export default class Dom extends Vue {
     }
     return undefined;
   }
-  async saveStoreServer() {
-    return await tiendasService.editTiendas(this.SelectedStoreInformation.id, {
+  //Edit Store Functions
+  /**
+   * send data to server using axios
+   */
+  async saveStoreServer(indexStore?: number) {
+    const body: object = {
       nombre: this.SelectedStoreInformation.nombre,
       direccion: this.SelectedStoreInformation.direccion
-    });
+    };
+    if (this.FormMode === "edit") {
+      const data: AxiosResponse = await this.sendEditStoreServer(body);
+      if (indexStore !== undefined) this.updateInfoToStore(indexStore, data);
+    } else {
+      await this.sendEditStoreServer(body, "create");
+    }
+  }
+  async sendEditStoreServer(body: object, mode?: string) {
+    if (mode === "create") {
+      const data: AxiosResponse = await tiendasService.addTiendas(body);
+      if (data.status === 201) {
+        this.Tiendas = [...this.Tiendas, data.data];
+        this.vaciarCampos();
+        this.Dialogs.editCreate = false;
+      }
+      return data;
+    }
+    return await tiendasService.editTiendas(
+      this.SelectedStoreInformation.id,
+      body
+    );
+  }
+
+  /**
+   * Update store variables
+   * @param indexStore
+   * @param data
+   */
+  updateInfoToStore(indexStore: number, data: AxiosResponse) {
+    if (data.status === 200) {
+      this.Tiendas[indexStore].nombre = data.data.nombre;
+      this.Tiendas[indexStore].direccion = data.data.direccion;
+      this.NombreTienda = data.data.nombre;
+      this.Dialogs.editCreate = false;
+    }
   }
 }
 </script>

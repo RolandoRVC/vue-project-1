@@ -1,5 +1,5 @@
 export interface TiendasInterface {
-  id: number,
+  id: number|null,
   nombre: string,
   direccion: string,
 }
