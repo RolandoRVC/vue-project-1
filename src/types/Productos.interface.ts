@@ -1,5 +1,5 @@
 export interface ProductosInterface {
-  id: number;
+  id: number|null;
   nombre: string;
   direccion: string;
 }

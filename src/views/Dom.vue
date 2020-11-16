@@ -212,6 +212,7 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { tiendasService } from "@/services/tiendas.service";
+import {productosService} from "@/services/productos.service";
 import { TiendasInterface } from "@/types/Tiendas.interface";
 import { AxiosResponse } from "axios";
 
@@ -237,7 +238,7 @@ export default class Dom extends Vue {
     this.SelectedStoreInformation = JSON.parse(JSON.stringify(tienda));
     this.NombreTienda = this.SelectedStoreInformation.nombre;
     this.CargandoProductos = true;
-    this.Productos = await tiendasService.getProductosTienda(
+    this.Productos = await productosService.getProductosTienda(
       `${tienda.id}?join=productos`
     );
     this.CargandoProductos = false;

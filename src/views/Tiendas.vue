@@ -28,6 +28,7 @@
 <script lang="ts">
 import Vue from "vue";
 import {tiendasService} from '@/services/tiendas.service';
+import {productosService} from '@/services/productos.service';
 /*
 import {TiendasInterface} from '@/types/Tiendas.interface';
 */
@@ -40,7 +41,7 @@ export default Vue.extend({
   methods: {
     async getProductos(id: number) {
       this.$data.showTable = true;
-      this.$data.productos = await tiendasService.getProductosTienda(`${id}?join=productos`);
+      this.$data.productos = await productosService.getProductosTienda(`${id}?join=productos`);
     }
   },
 
