@@ -444,6 +444,7 @@ export default class Dom extends Vue {
         await this.saveStoreServer(indexStore);
       }
     }
+    console.log(this.SelectedStoreInformation.nombre);
   }
 
   //start with helper function
